@@ -19,8 +19,28 @@ RSpec.configure do |config|
     def have_deprecation(msg)
       DeprecationMatcher.new(msg)
     end
+
+    def run_queries(num)
+      QueryCountMatcher.new(num)
+    end
+
+    def ignore_deprecation
+      ActiveSupport::Deprecation.silence { yield }
+    end
+
+    def show_queries(&block)
+      counter = QueryCountMatcher.new(nil)
+      counter.run block
+    ensure
+      queries = counter.performed_queries
+      if queries.any?
+        puts queries
+      else
+        puts "no queries"
+      end
+    end
   }
-  
+
   config.mock_with :mocha
   config.backtrace_clean_patterns << /view_example_group/
 end
