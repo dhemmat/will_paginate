@@ -41,6 +41,8 @@ module WillPaginate
     protected
     
       def page_number(page)
+        page_for_link = ( page == 1 ? nil : page )
+
         unless page == current_page
           link(page, page, :rel => rel_value(page))
         else
@@ -89,6 +91,9 @@ module WillPaginate
 
       def link(text, target, attributes = {})
         if target.is_a? Fixnum
+          if target == 1
+            target = nil
+          end
           attributes[:rel] = rel_value(target)
           target = url(target)
         end
@@ -111,6 +116,7 @@ module WillPaginate
         when @collection.current_page - 1; 'prev' + (page == 1 ? ' start' : '')
         when @collection.current_page + 1; 'next'
         when 1; 'start'
+        when nil; 'start'
         end
       end
 
